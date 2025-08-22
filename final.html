@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>For the loml 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="theme-color" content="#FF7FBF" />
+
+  <style>
+    :root{
+      --bg1:#0f0a1f; --bg2:#1b0b1e; --accent:#ff7fbf; --text:#fffafc; --muted:#e7d9e2;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:var(--text);
+      background: linear-gradient(160deg, var(--bg1), var(--bg2));
+      display:flex; align-items:center; justify-content:center;
+      overflow-x:hidden;
+    }
+
+    .card{
+      width:min(92vw, 520px);
+      background: rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:20px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+    .photo{aspect-ratio:1/1;}
+    .photo img{width:100%; height:100%; object-fit:cover;}
+    .content{padding:20px}
+    h1{margin:6px 0 10px; font-size:clamp(22px, 5vw, 28px);}
+    p{margin:0 0 14px; color:var(--muted); font-size:clamp(15px, 3.8vw, 17px); line-height:1.6;}
+
+    .controls{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+    .btn{
+      border:1px solid rgba(255,255,255,.2);
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      padding:10px 14px; border-radius:999px;
+      font-weight:600; cursor:pointer;
+    }
+    .song-title{margin-left:auto; font-size:13px; opacity:.8; max-width:48%; white-space:nowrap; text-overflow:ellipsis; overflow:hidden}
+
+    .proposal{margin-top:20px; text-align:center;}
+    .proposal h2{margin-bottom:12px;}
+    .choice-btn{
+      margin:6px; padding:12px 20px; border:none; border-radius:999px;
+      font-size:16px; font-weight:bold; cursor:pointer;
+    }
+    #yesBtn{background:#ff7fbf; color:white;}
+    #noBtn{background:#888; color:white; position:relative;}
+
+    /* Floating hearts */
+    .heart{
+      position:fixed; font-size:30px; animation: floatUp 3s ease forwards;
+      pointer-events:none;
+    }
+    @keyframes floatUp{
+      0%{transform:translateY(0) scale(1); opacity:1;}
+      100%{transform:translateY(-200px) scale(1.6); opacity:0;}
+    }
+
+    /* Tap to start overlay */
+    .gate{
+      position:fixed; inset:0; display:grid; place-items:center;
+      background:rgba(15,10,31,.9);
+      z-index:10;
+      transition:opacity .5s ease, visibility .5s ease;
+    }
+    .gate.hidden{opacity:0; visibility:hidden}
+    .pulse{
+      display:inline-block; padding:14px 20px; border-radius:999px;
+      background:rgba(255,255,255,.15);
+      font-weight:700; cursor:pointer;
+      animation:breathe 1.8s ease-in-out infinite;
+    }
+    @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <section class="photo">
+      <!-- ✅ photo is fixed -->
+      <img src="our-photo.jpg.jpg" alt="Us together">
+    </section>
+
+    <section class="content">
+      <h1>Hey Asmi, 💫</h1>
+      <p>
+        Being with you these past months has made my life feel complete, standing here by the ocean, with the waves that never end.
+        I don’t just want you for today or tomorrow… I want you for every sunrise, every sunset, every lifetime. 
+        So tonight, under this sky full of stars, I’m asking you with all my heart — will you be mine, forever?
+        Because once you say yes, you’re stuck with me for life and I promise, I’ll spend every day making sure you never regret it.
+      </p>
+
+      <div class="controls">
+        <button id="playPause" class="btn">⏸️ Pause</button>
+        <button id="mute" class="btn">🔊 Mute</button>
+        <span class="song-title" id="songTitle">our-song.mp3</span>
+      </div>
+
+      <div class="proposal">
+        <h2>Will you be my girlfriend? </h2>
+        <button id="yesBtn" class="choice-btn">Yes 💖</button>
+        <button id="noBtn" class="choice-btn">No 💔</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Tap to Start gate -->
+  <div class="gate" id="gate">
+    <div class="pulse" id="startBtn">Tap to start 🎵</div>
+  </div>
+
+  <!-- ✅ music file -->
+  <audio id="audio" src="our-song.mp3" preload="auto" loop></audio>
+
+  <script>
+    const audio = document.getElementById('audio');
+    const gate  = document.getElementById('gate');
+    const startBtn = document.getElementById('startBtn');
+    const playPause = document.getElementById('playPause');
+    const muteBtn = document.getElementById('mute');
+    const songTitle = document.getElementById('songTitle');
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+
+    // show song name
+    try {
+      const url = new URL(audio.currentSrc || audio.src, location.href);
+      songTitle.textContent = decodeURIComponent(url.pathname.split('/').pop());
+    } catch { }
+
+    // Start audio on first tap
+    startBtn.addEventListener('click', () => {
+      gate.classList.add('hidden');
+      audio.play();
+      playPause.textContent = '⏸️ Pause';
+    });
+
+    playPause.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play();
+        playPause.textContent = '⏸️ Pause';
+      } else {
+        audio.pause();
+        playPause.textContent = '▶️ Play';
+      }
+    });
+
+    muteBtn.addEventListener('click', () => {
+      audio.muted = !audio.muted;
+      muteBtn.textContent = audio.muted ? '🔈 Unmute' : '🔊 Mute';
+    });
+
+    // Yes button → floating hearts
+    yesBtn.addEventListener('click', () => {
+      for (let i = 0; i < 8; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.textContent = '💖';
+        heart.style.left = (50 + (Math.random() * 100 - 50)) + 'vw';
+        heart.style.bottom = '20px';
+        document.body.appendChild(heart);
+        setTimeout(()=>heart.remove(), 3000);
+      }
+      alert("yayya you just made me the happiest man on earth thank you baby 💕");
+    });
+
+    // No button → run away
+    noBtn.addEventListener('mouseenter', () => {
+      const x = Math.random() * 200 - 100;
+      const y = Math.random() * 100 - 50;
+      noBtn.style.transform = `translate(${x}px, ${y}px)`;
+    });
+  </script>
+</body>
+</html>
